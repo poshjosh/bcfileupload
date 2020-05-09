@@ -11,8 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * @author hp
  */
-@AutoConfigureMockMvc
-@SpringBootTest
+//@AutoConfigureMockMvc
+//@SpringBootTest
 public class FileuploadTest {
 
 	@Autowired
