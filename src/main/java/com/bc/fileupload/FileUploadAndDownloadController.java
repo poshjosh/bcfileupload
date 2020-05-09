@@ -1,14 +1,16 @@
 package com.bc.fileupload;
 
-import com.bc.fileupload.functions.GetUniquePathForFilename;
-import com.bc.fileupload.services.FileStorage;
+import com.bc.fileupload.functions.GetContentType;
 import com.bc.fileupload.services.FileStorageHandler;
 import java.util.List;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +25,17 @@ public class FileUploadAndDownloadController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileUploadAndDownloadController.class);
 
-    public static final String DOWNLOAD_PATH_CONTEXT = "/downloadFile";
+    public static final String DOWNLOAD_PATH_CONTEXT = FileuploadConfiguration.DOWNLOAD_PATH_CONTEXT;
 
     private final FileStorageHandler delegate;
+    private final GetContentType getContentType;
 
+    @Autowired
     public FileUploadAndDownloadController(
-            @Autowired GetUniquePathForFilename getPathForFilename, 
-            @Autowired FileStorage fileStorage) {
-        this.delegate = new FileStorageHandler(
-                getPathForFilename, fileStorage, DOWNLOAD_PATH_CONTEXT);
+            FileStorageHandler fileStorageHandler,
+            GetContentType getContentType) {
+        this.delegate = Objects.requireNonNull(fileStorageHandler);
+        this.getContentType = Objects.requireNonNull(getContentType);
     }
     
     @PostMapping("/uploadFile")
@@ -46,7 +50,16 @@ public class FileUploadAndDownloadController {
 
     @GetMapping(DOWNLOAD_PATH_CONTEXT + "/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-        LOG.info("File name: {}", fileName);
-        return delegate.downloadFile(fileName, request);
+        
+        LOG.debug("File name: {}", fileName);
+        
+        final Resource resource = delegate.loadFileAsResource(fileName);
+        
+        final String contentType = this.getContentType.getContentType(request, resource);
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }
