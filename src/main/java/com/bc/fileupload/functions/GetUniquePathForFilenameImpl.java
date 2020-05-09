@@ -42,6 +42,11 @@ public class GetUniquePathForFilenameImpl implements GetUniquePathForFilename {
 
         this.createDirsIfNotExisting(this.baseDir);
     }
+    
+    @Override
+    public GetUniquePathForFilename newInstance(Path baseDir) {
+        return new GetUniquePathForFilenameImpl(baseDir);
+    }
 
     @Override
     public Path apply(String arg) {

@@ -26,6 +26,8 @@ public interface GetUniquePathForFilename extends Function<String, Path> {
 
     @Override
     Path apply(String filename);
+    
+    GetUniquePathForFilename newInstance(Path baseDir);
 
     Path getBaseDir();
 }
