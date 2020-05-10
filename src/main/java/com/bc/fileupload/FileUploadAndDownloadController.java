@@ -40,12 +40,12 @@ public class FileUploadAndDownloadController {
     
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        return delegate.uploadFile(file);
+        return delegate.save(file);
     }
 
     @PostMapping("/uploadFiles")
     public List<UploadFileResponse> uploadFiles(@RequestParam("files") MultipartFile[] files) {
-        return delegate.uploadFiles(files);
+        return delegate.save(files);
     }
 
     @GetMapping(DOWNLOAD_PATH_CONTEXT + "/{fileName:.+}")
