@@ -17,6 +17,7 @@
 package com.bc.fileupload.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
@@ -26,7 +27,11 @@ import java.nio.file.Path;
 public interface FileStorage<K> {
     
     default Path store(K key, byte [] bytes) {
-        return store(key, new ByteArrayInputStream(bytes));
+        try(final ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
+            return store(key, in);
+        }catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     Path store(K key, InputStream in);
