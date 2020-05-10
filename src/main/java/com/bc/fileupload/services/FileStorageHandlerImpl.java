@@ -49,7 +49,7 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
     }
     
     @Override
-    public List<UploadFileResponse> uploadFiles(MultipartFile[] files) {
+    public List<UploadFileResponse> save(MultipartFile[] files) {
         
         LOG.debug("Uploading {} files", files == null ? null : files.length);
         
@@ -58,7 +58,7 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
                 .map(file -> {
                     try{
                         
-                        return uploadFile(file);
+                        return save(file);
                         
                     }catch(RuntimeException e) {
                         
@@ -71,7 +71,7 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
     }
     
     @Override
-    public UploadFileResponse uploadFile(MultipartFile file) {
+    public UploadFileResponse save(MultipartFile file) {
 
         LOG.debug("Uploading file: {} = {}", file.getName(), file.getOriginalFilename());
         
@@ -115,8 +115,7 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
             int responseCode, String responseMessage,
             MultipartFile file, String savedTo, String fileDownloadUri) {
         return new UploadFileResponse(
-                responseCode, responseMessage, file.getName(), file.getOriginalFilename(),
-                savedTo, fileDownloadUri, file.getContentType(), file.getSize());
+                responseCode, responseMessage, savedTo, fileDownloadUri, file);
     }
     
     @Override

@@ -29,9 +29,9 @@ public interface FileStorageHandler {
 
     FileStorageHandler newInstance(Path baseDir);
     
-    List<UploadFileResponse> uploadFiles(MultipartFile[] files);
+    List<UploadFileResponse> save(MultipartFile[] files);
     
-    UploadFileResponse uploadFile(MultipartFile file);
+    UploadFileResponse save(MultipartFile file);
     
     Resource loadFileAsResource(String relativePath);
 }
