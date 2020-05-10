@@ -18,6 +18,7 @@ package com.bc.fileupload;
 
 import java.io.Serializable;
 import java.util.Objects;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Mar 27, 2019 7:44:29 PM
@@ -35,6 +36,13 @@ public class UploadFileResponse implements Serializable {
 
     public UploadFileResponse() {}
 
+    public UploadFileResponse(int responseCode, String responseMessage,
+            String savedTo, String fileDownloadUri, MultipartFile file) {
+        this(
+                responseCode, responseMessage, file.getName(), file.getOriginalFilename(),
+                savedTo, fileDownloadUri, file.getContentType(), file.getSize());
+    }
+    
     public UploadFileResponse(int responseCode, String responseMessage,
             String name, String originalFileName, String savedTo, 
             String fileDownloadUri, String fileType, long size) {
