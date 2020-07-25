@@ -19,10 +19,9 @@ package com.bc.fileupload.services;
 import com.bc.fileupload.exceptions.FileStorageException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Mar 27, 2019 10:43:15 PM
@@ -30,12 +29,22 @@ import java.nio.file.StandardCopyOption;
 public class StoreFileToLocalDisc implements FileStorage<Path> {
 
 //    private static final Logger LOG = LoggerFactory.getLogger(StoreFileToLocalDisc.class);
+    
+    private final SaveHandler saveHandler;
+
+    public StoreFileToLocalDisc() {
+        this(new SaveHandlerImpl());
+    }
+    
+    public StoreFileToLocalDisc(SaveHandler saveHandler) {
+        this.saveHandler = Objects.requireNonNull(saveHandler);
+    }
 
     @Override
     public Path store(Path path, InputStream in) {
         
         try {
-            this.copy(in, path);
+            this.saveHandler.save(in, path);
 
             return path;
             
@@ -58,14 +67,5 @@ public class StoreFileToLocalDisc implements FileStorage<Path> {
             throw new FileStorageException("Could not read content from: " + 
                     path + ". Please try again!", ex);
         }
-    }
-    
-    public void copy(InputStream source, Path target) throws IOException{
-        
-        Files.copy(source, target, this.getCopyOptions());
-    }
-    
-    public CopyOption[] getCopyOptions() {
-        return new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
     }
 }
