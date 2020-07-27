@@ -28,6 +28,10 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
     
     private final ImageRescaler imageRescaler;
 
+    public SaveResizedImageWithVisualSignature() {
+        this(null, null);
+    }
+    
     public SaveResizedImageWithVisualSignature(
             Dimension preferredSize, String signature) {
         this(preferredSize, signature, 
@@ -39,7 +43,7 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
             Dimension preferredSize, String signature,
             com.bc.imageutil.ImageReader imageReader, 
             ImageOverlay imageOverlay, ImageRescaler imageRescaler) {
-        this.preferredSize = Objects.requireNonNull(preferredSize);
+        this.preferredSize = preferredSize;
         this.signature = Objects.requireNonNull(signature);
         this.imageReader = Objects.requireNonNull(imageReader);
         this.imageOverlay = Objects.requireNonNull(imageOverlay);
@@ -54,21 +58,23 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
         final String fileExtension = Util.getExtension(filename.toString(), null);
         Objects.requireNonNull(fileExtension);
         
-        final BufferedImage buffImage = imageReader.read(source, fileExtension);
+        final BufferedImage image = imageReader.read(source, fileExtension);
 
         if(signature != null) {
-            imageOverlay.drawString(buffImage, signature);
+            imageOverlay.drawString(image, signature);
         }
 
-        final Dimension suggested = ImageDimensions
-                .getSuggestedDimension(buffImage, preferredSize);
-        
-        final int width = suggested.width;
-        final int height = suggested.height;
-        
-        final BufferedImage scaledImg = imageRescaler
-                .scaleImage(buffImage, width, height, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage scaledImage;
+        if(preferredSize == null) {
+            scaledImage = image;
+        }else{
+            final Dimension targetSize = ImageDimensions.getSuggestedDimension(image, preferredSize);
+            final int width = targetSize.width;
+            final int height = targetSize.height;
+            scaledImage = imageRescaler
+                    .scaleImage(image, width, height, BufferedImage.TYPE_INT_RGB);
+        }
 
-        boolean saved = javax.imageio.ImageIO.write(scaledImg, fileExtension, target.toFile());
+        boolean saved = javax.imageio.ImageIO.write(scaledImage, fileExtension, target.toFile());
     }
 }
