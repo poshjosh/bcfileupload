@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**
- * @author hp
+ * @author chinomso ikwuagwu
  */
 public class GetContentTypeImpl implements GetContentType{
     

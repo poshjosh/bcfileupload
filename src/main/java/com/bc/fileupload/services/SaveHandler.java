@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
- * @author hp
+ * @author chinomso ikwuagwu
  */
 @FunctionalInterface
 public interface SaveHandler{

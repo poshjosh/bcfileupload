@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 
 /**
- * @author hp
+ * @author chinomso ikwuagwu
  */
 public interface GetContentType{
 

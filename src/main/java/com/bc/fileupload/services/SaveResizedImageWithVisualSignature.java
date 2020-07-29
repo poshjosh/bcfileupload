@@ -12,11 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author hp
+ * @author chinomso ikwuagwu
  */
 public class SaveResizedImageWithVisualSignature implements SaveHandler{
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SaveResizedImageWithVisualSignature.class);
     
     private final Dimension preferredSize;
     
@@ -58,10 +62,13 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
         final String fileExtension = Util.getExtension(filename.toString(), null);
         Objects.requireNonNull(fileExtension);
         
+        LOG.trace("File, extension: {}, name: {}", fileExtension, filename);
+        
         final BufferedImage image = imageReader.read(source, fileExtension);
 
         if(signature != null) {
             imageOverlay.drawString(image, signature);
+            LOG.trace("Drawn signature: {}", signature);
         }
 
         final BufferedImage scaledImage;
@@ -73,6 +80,7 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
             final int height = targetSize.height;
             scaledImage = imageRescaler
                     .scaleImage(image, width, height, BufferedImage.TYPE_INT_RGB);
+//            LOG.trace("Scaled image from: {}, to: {}", new Dimension(image.getWidth(), image.getHeight()), targetSize);
         }
 
         boolean saved = javax.imageio.ImageIO.write(scaledImage, fileExtension, target.toFile());
