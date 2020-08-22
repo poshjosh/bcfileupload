@@ -25,8 +25,6 @@ public class FileUploadAndDownloadController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileUploadAndDownloadController.class);
 
-    public static final String DOWNLOAD_PATH_CONTEXT = FileuploadConfiguration.DOWNLOAD_PATH_CONTEXT;
-
     private final FileStorageHandler delegate;
     private final GetContentType getContentType;
 
@@ -48,7 +46,7 @@ public class FileUploadAndDownloadController {
         return delegate.save(files);
     }
 
-    @GetMapping(DOWNLOAD_PATH_CONTEXT + "/{fileName:.+}")
+    @GetMapping(FileuploadConfigurationSource.DEFAULT_DOWNLOAD_CONTEXT_PATH + "/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         
         LOG.debug("File name: {}", fileName);

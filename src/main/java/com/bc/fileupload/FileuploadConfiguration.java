@@ -17,15 +17,17 @@ import org.springframework.core.env.Environment;
 @ConditionalOnMissingBean(FileuploadConfigurationSource.class)
 public class FileuploadConfiguration {
 
-    public static final String DOWNLOAD_PATH_CONTEXT = 
-            FileuploadConfigurationSource.DOWNLOAD_PATH_CONTEXT;
-    public static final String OUTPUT_DIR_PROPERTY_NAME = 
-            FileuploadConfigurationSource.OUTPUT_DIR_PROPERTY_NAME;
+    public static final String OUTPUT_DIR_PROPERTY_NAME = "bcfileupload.outputDir";
     
     private final FileuploadConfigurationSource delegate;
     
     public FileuploadConfiguration(Environment environment) {
-        this.delegate = new FileuploadConfigurationSource(environment);
+        this.delegate = new FileuploadConfigurationSource(){
+            @Override
+            public String getDirectoryToSaveUploadedFiles() {
+                return environment.getProperty(OUTPUT_DIR_PROPERTY_NAME);
+            }
+        };
     }
 
     @Bean public GetContentType getContentType() {

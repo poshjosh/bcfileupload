@@ -13,23 +13,18 @@ import com.bc.fileupload.services.StoreFileToLocalDisc;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 
 /**
  * @author chinomso ikwuagwu
  */
-public class FileuploadConfigurationSource {
+public abstract class FileuploadConfigurationSource {
     
-    public static final String DOWNLOAD_PATH_CONTEXT = "/downloadFile";
-    public static final String OUTPUT_DIR_PROPERTY_NAME = "bcfileupload.outputDir";
+    public static final String DEFAULT_DOWNLOAD_CONTEXT_PATH = "/files";
     
-    private final Environment environment;
+    public FileuploadConfigurationSource() {}
 
-    public FileuploadConfigurationSource(Environment environment) {
-        this.environment = Objects.requireNonNull(environment);
-    }
+    public abstract String getDirectoryToSaveUploadedFiles();
     
     @Bean public GetContentType getContentType() {
         return new GetContentTypeImpl();
@@ -39,12 +34,16 @@ public class FileuploadConfigurationSource {
         return new FileStorageHandlerImpl(
                 this.getUniquePathForFilename(),
                 this.fileStorage(),
-                DOWNLOAD_PATH_CONTEXT
+                this.getDownloadContextPath()
         );
     }
     
+    public String getDownloadContextPath() {
+        return DEFAULT_DOWNLOAD_CONTEXT_PATH;
+    }
+    
     @Bean public GetUniquePathForFilename getUniquePathForFilename() {
-        final String prop = environment.getProperty(OUTPUT_DIR_PROPERTY_NAME);
+        final String prop = this.getDirectoryToSaveUploadedFiles();
         final Path path;
         if(prop == null || prop.isEmpty()) {
             path = Paths.get(System.getProperty("user.home"), ".bcfileupload");
