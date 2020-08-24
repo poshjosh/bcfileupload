@@ -1,5 +1,7 @@
 package com.bc.fileupload.services;
 
+import com.bc.imageutil.DrawConfig;
+import com.bc.imageutil.DrawConfigs;
 import com.bc.imageutil.ImageDimensions;
 import com.bc.imageutil.ImageOverlay;
 import com.bc.imageutil.ImageRescaler;
@@ -31,6 +33,8 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
     private final ImageOverlay imageOverlay;
     
     private final ImageRescaler imageRescaler;
+    
+    private final DrawConfig drawConfig;
 
     public SaveResizedImageWithVisualSignature() {
         this(null, null);
@@ -40,18 +44,44 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
             Dimension preferredSize, String signature) {
         this(preferredSize, signature, 
                 new com.bc.imageutil.impl.ImageReaderImpl(),
-                new OverlayImageWithText(), new ImageRescalerImpl());
+                new OverlayImageWithText(), new ImageRescalerImpl(),
+                DrawConfigs.centre());
     }
     
     public SaveResizedImageWithVisualSignature(
             Dimension preferredSize, String signature,
-            com.bc.imageutil.ImageReader imageReader, 
-            ImageOverlay imageOverlay, ImageRescaler imageRescaler) {
+            com.bc.imageutil.ImageReader imageReader, ImageOverlay imageOverlay, 
+            ImageRescaler imageRescaler, DrawConfig drawConfig) {
         this.preferredSize = preferredSize;
         this.signature = Objects.requireNonNull(signature);
         this.imageReader = Objects.requireNonNull(imageReader);
         this.imageOverlay = Objects.requireNonNull(imageOverlay);
         this.imageRescaler = Objects.requireNonNull(imageRescaler);
+        this.drawConfig = Objects.requireNonNull(drawConfig);
+    }
+    
+    public SaveResizedImageWithVisualSignature withImageReader(com.bc.imageutil.ImageReader imageReader) {
+        return new SaveResizedImageWithVisualSignature(
+                this.preferredSize, this.signature, imageReader, 
+                this.imageOverlay, this.imageRescaler, this.drawConfig);
+    }
+
+    public SaveResizedImageWithVisualSignature withImageOverlay(ImageOverlay imageOverlay) {
+        return new SaveResizedImageWithVisualSignature(
+                this.preferredSize, this.signature, this.imageReader, 
+                imageOverlay, this.imageRescaler, this.drawConfig);
+    }
+
+    public SaveResizedImageWithVisualSignature withImageRescaler(ImageRescaler imageRescaler) {
+        return new SaveResizedImageWithVisualSignature(
+                this.preferredSize, this.signature, this.imageReader, 
+                this.imageOverlay, imageRescaler, this.drawConfig);
+    }
+
+    public SaveResizedImageWithVisualSignature withDrawConfig(DrawConfig drawConfig) {
+        return new SaveResizedImageWithVisualSignature(
+                this.preferredSize, this.signature, this.imageReader, 
+                this.imageOverlay, this.imageRescaler, drawConfig);
     }
 
     @Override
@@ -66,16 +96,12 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
         
         final BufferedImage image = imageReader.read(source, fileExtension);
 
-        if(signature != null) {
-            imageOverlay.drawString(image, signature);
-            LOG.trace("Drawn signature: {}", signature);
-        }
-
         final BufferedImage scaledImage;
         if(preferredSize == null) {
             scaledImage = image;
         }else{
-            final Dimension targetSize = ImageDimensions.getSuggestedDimension(image, preferredSize);
+            final Dimension targetSize = ImageDimensions
+                    .getSuggestedDimension(image, preferredSize);
             final int width = targetSize.width;
             final int height = targetSize.height;
             scaledImage = imageRescaler
@@ -83,6 +109,11 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
 //            LOG.trace("Scaled image from: {}, to: {}", new Dimension(image.getWidth(), image.getHeight()), targetSize);
         }
 
+        if(signature != null) {
+            imageOverlay.drawString(scaledImage, signature, this.drawConfig);
+            LOG.trace("Drawn signature: {}", signature);
+        }
+        
         boolean saved = javax.imageio.ImageIO.write(scaledImage, fileExtension, target.toFile());
     }
 }
