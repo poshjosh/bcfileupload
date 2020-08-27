@@ -33,5 +33,7 @@ public interface FileStorageHandler {
     
     UploadFileResponse save(MultipartFile file);
     
+    boolean delete(Path file);
+    
     Resource loadFileAsResource(String relativePath);
 }

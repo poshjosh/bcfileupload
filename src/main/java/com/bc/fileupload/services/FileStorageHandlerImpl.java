@@ -47,6 +47,11 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
                 downloadPathContext
         );
     }
+
+    @Override
+    public boolean delete(Path path) {
+        return this.fileStorage.delete(path);
+    }
     
     @Override
     public List<UploadFileResponse> save(MultipartFile[] files) {

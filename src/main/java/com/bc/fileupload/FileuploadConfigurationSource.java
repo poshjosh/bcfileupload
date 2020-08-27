@@ -9,7 +9,7 @@ import com.bc.fileupload.services.FileStorageHandler;
 import com.bc.fileupload.services.FileStorageHandlerImpl;
 import com.bc.fileupload.services.SaveHandler;
 import com.bc.fileupload.services.SaveHandlerImpl;
-import com.bc.fileupload.services.StoreFileToLocalDisc;
+import com.bc.fileupload.services.LocalDiscStorage;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,7 +58,7 @@ public abstract class FileuploadConfigurationSource {
     }
     
     @Bean public FileStorage fileStorage() {
-        return new StoreFileToLocalDisc(this.saveHandler());
+        return new LocalDiscStorage(this.saveHandler());
     }
     
     @Bean public SaveHandler saveHandler() {

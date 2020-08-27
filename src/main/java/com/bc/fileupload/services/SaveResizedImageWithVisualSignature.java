@@ -5,9 +5,11 @@ import com.bc.imageutil.DrawConfigs;
 import com.bc.imageutil.ImageDimensions;
 import com.bc.imageutil.ImageOverlay;
 import com.bc.imageutil.ImageRescaler;
+import com.bc.imageutil.ImageWriter;
 import com.bc.imageutil.impl.ImageRescalerImpl;
 import com.bc.imageutil.impl.OverlayImageWithText;
 import com.bc.imageutil.Util;
+import com.bc.imageutil.impl.ImageWriterImpl;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -35,6 +37,8 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
     private final ImageRescaler imageRescaler;
     
     private final DrawConfig drawConfig;
+    
+    private final ImageWriter imageWriter;
 
     public SaveResizedImageWithVisualSignature() {
         this(null, null);
@@ -45,43 +49,51 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
         this(preferredSize, signature, 
                 new com.bc.imageutil.impl.ImageReaderImpl(),
                 new OverlayImageWithText(), new ImageRescalerImpl(),
-                DrawConfigs.centre());
+                DrawConfigs.centre(), new ImageWriterImpl());
     }
     
     public SaveResizedImageWithVisualSignature(
             Dimension preferredSize, String signature,
             com.bc.imageutil.ImageReader imageReader, ImageOverlay imageOverlay, 
-            ImageRescaler imageRescaler, DrawConfig drawConfig) {
+            ImageRescaler imageRescaler, DrawConfig drawConfig,
+            ImageWriter imageWriter) {
         this.preferredSize = preferredSize;
         this.signature = Objects.requireNonNull(signature);
         this.imageReader = Objects.requireNonNull(imageReader);
         this.imageOverlay = Objects.requireNonNull(imageOverlay);
         this.imageRescaler = Objects.requireNonNull(imageRescaler);
         this.drawConfig = Objects.requireNonNull(drawConfig);
+        this.imageWriter = Objects.requireNonNull(imageWriter);
     }
     
     public SaveResizedImageWithVisualSignature withImageReader(com.bc.imageutil.ImageReader imageReader) {
         return new SaveResizedImageWithVisualSignature(
                 this.preferredSize, this.signature, imageReader, 
-                this.imageOverlay, this.imageRescaler, this.drawConfig);
+                this.imageOverlay, this.imageRescaler, this.drawConfig, this.imageWriter);
     }
 
     public SaveResizedImageWithVisualSignature withImageOverlay(ImageOverlay imageOverlay) {
         return new SaveResizedImageWithVisualSignature(
                 this.preferredSize, this.signature, this.imageReader, 
-                imageOverlay, this.imageRescaler, this.drawConfig);
+                imageOverlay, this.imageRescaler, this.drawConfig, this.imageWriter);
     }
 
     public SaveResizedImageWithVisualSignature withImageRescaler(ImageRescaler imageRescaler) {
         return new SaveResizedImageWithVisualSignature(
                 this.preferredSize, this.signature, this.imageReader, 
-                this.imageOverlay, imageRescaler, this.drawConfig);
+                this.imageOverlay, imageRescaler, this.drawConfig, this.imageWriter);
     }
 
     public SaveResizedImageWithVisualSignature withDrawConfig(DrawConfig drawConfig) {
         return new SaveResizedImageWithVisualSignature(
                 this.preferredSize, this.signature, this.imageReader, 
-                this.imageOverlay, this.imageRescaler, drawConfig);
+                this.imageOverlay, this.imageRescaler, drawConfig, this.imageWriter);
+    }
+
+    public SaveResizedImageWithVisualSignature withImageWriter(ImageWriter imageWriter) {
+        return new SaveResizedImageWithVisualSignature(
+                this.preferredSize, this.signature, this.imageReader, 
+                this.imageOverlay, this.imageRescaler, this.drawConfig, imageWriter);
     }
 
     @Override
@@ -114,6 +126,6 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
             LOG.trace("Drawn signature: {}", signature);
         }
         
-        boolean saved = javax.imageio.ImageIO.write(scaledImage, fileExtension, target.toFile());
+        this.imageWriter.write(scaledImage, fileExtension, target);
     }
 }
