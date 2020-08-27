@@ -58,20 +58,6 @@ public class LocalDiscStorage implements FileStorage<Path> {
     }
 
     @Override
-    public InputStream load(Path path) {
-        
-        try {
-            
-            return Files.newInputStream(path);
-            
-        } catch (IOException ex) {
-            
-            throw new FileStorageException("Could not read content from: " + 
-                    path + ". Please try again!", ex);
-        }
-    }
-
-    @Override
     public boolean delete(Path path) {
         // @TODO
         // Walk through files to local disc and delete orphans (i.e those

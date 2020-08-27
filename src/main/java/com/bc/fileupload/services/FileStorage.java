@@ -36,7 +36,5 @@ public interface FileStorage<K> {
     
     Path store(K key, InputStream in);
     
-    InputStream load(K key);
-    
     boolean delete(Path path);
 }
