@@ -1,15 +1,15 @@
 package com.bc.fileupload.services;
 
+import com.bc.fileupload.ImageWriter;
+import com.bc.fileupload.ImageWriterImpl;
 import com.bc.imageutil.DrawConfig;
 import com.bc.imageutil.DrawConfigs;
 import com.bc.imageutil.ImageDimensions;
 import com.bc.imageutil.ImageOverlay;
 import com.bc.imageutil.ImageRescaler;
-import com.bc.imageutil.ImageWriter;
 import com.bc.imageutil.impl.ImageRescalerImpl;
 import com.bc.imageutil.impl.OverlayImageWithText;
 import com.bc.imageutil.Util;
-import com.bc.imageutil.impl.ImageWriterImpl;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author chinomso ikwuagwu
  */
-public class SaveResizedImageWithVisualSignature implements SaveHandler{
+public class SaveResizedImageWithTextOverlay implements SaveHandler{
     
-    private static final Logger LOG = LoggerFactory.getLogger(SaveResizedImageWithVisualSignature.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveResizedImageWithTextOverlay.class);
     
     private final Dimension preferredSize;
     
@@ -40,11 +40,11 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
     
     private final ImageWriter imageWriter;
 
-    public SaveResizedImageWithVisualSignature() {
+    public SaveResizedImageWithTextOverlay() {
         this(null, null);
     }
     
-    public SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay(
             Dimension preferredSize, String signature) {
         this(preferredSize, signature, 
                 new com.bc.imageutil.impl.ImageReaderImpl(),
@@ -52,7 +52,7 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
                 DrawConfigs.centre(), new ImageWriterImpl());
     }
     
-    public SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay(
             Dimension preferredSize, String signature,
             com.bc.imageutil.ImageReader imageReader, ImageOverlay imageOverlay, 
             ImageRescaler imageRescaler, DrawConfig drawConfig,
@@ -66,32 +66,32 @@ public class SaveResizedImageWithVisualSignature implements SaveHandler{
         this.imageWriter = Objects.requireNonNull(imageWriter);
     }
     
-    public SaveResizedImageWithVisualSignature withImageReader(com.bc.imageutil.ImageReader imageReader) {
-        return new SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay withImageReader(com.bc.imageutil.ImageReader imageReader) {
+        return new SaveResizedImageWithTextOverlay(
                 this.preferredSize, this.signature, imageReader, 
                 this.imageOverlay, this.imageRescaler, this.drawConfig, this.imageWriter);
     }
 
-    public SaveResizedImageWithVisualSignature withImageOverlay(ImageOverlay imageOverlay) {
-        return new SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay withImageOverlay(ImageOverlay imageOverlay) {
+        return new SaveResizedImageWithTextOverlay(
                 this.preferredSize, this.signature, this.imageReader, 
                 imageOverlay, this.imageRescaler, this.drawConfig, this.imageWriter);
     }
 
-    public SaveResizedImageWithVisualSignature withImageRescaler(ImageRescaler imageRescaler) {
-        return new SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay withImageRescaler(ImageRescaler imageRescaler) {
+        return new SaveResizedImageWithTextOverlay(
                 this.preferredSize, this.signature, this.imageReader, 
                 this.imageOverlay, imageRescaler, this.drawConfig, this.imageWriter);
     }
 
-    public SaveResizedImageWithVisualSignature withDrawConfig(DrawConfig drawConfig) {
-        return new SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay withDrawConfig(DrawConfig drawConfig) {
+        return new SaveResizedImageWithTextOverlay(
                 this.preferredSize, this.signature, this.imageReader, 
                 this.imageOverlay, this.imageRescaler, drawConfig, this.imageWriter);
     }
 
-    public SaveResizedImageWithVisualSignature withImageWriter(ImageWriter imageWriter) {
-        return new SaveResizedImageWithVisualSignature(
+    public SaveResizedImageWithTextOverlay withImageWriter(ImageWriter imageWriter) {
+        return new SaveResizedImageWithTextOverlay(
                 this.preferredSize, this.signature, this.imageReader, 
                 this.imageOverlay, this.imageRescaler, this.drawConfig, imageWriter);
     }

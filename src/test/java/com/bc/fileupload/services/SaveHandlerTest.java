@@ -39,7 +39,7 @@ public class SaveHandlerTest {
     
     private SaveHandler getInstance() {
         final Font font = Font.decode(Font.MONOSPACED+"-PLAIN-16");
-        return new SaveResizedImageWithVisualSignature(
+        return new SaveResizedImageWithTextOverlay(
                 new Dimension(512, 512), "MyAwesomeSite.com")
                 .withDrawConfig(DrawConfigs.fromBottomRight(0f, 0.05f, font, Color.BLACK));
     }
