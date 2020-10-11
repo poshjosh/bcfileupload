@@ -17,17 +17,20 @@
 package com.bc.fileupload.functions;
 
 import java.nio.file.Path;
-import java.util.function.Function;
+import java.nio.file.Paths;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Apr 9, 2019 10:42:13 AM
  */
-public interface GetUniquePathForFilename extends Function<String, Path> {
+public interface FilePathProvider{
 
-    @Override
-    Path apply(String filename);
+    Path getUniquePath(String filename);
     
-    GetUniquePathForFilename newInstance(Path baseDir);
+    FilePathProvider newInstance(Path baseDir);
+    
+    default Path getPath(String a) {
+        return Paths.get(this.getBaseDir().toString(), a).toAbsolutePath().normalize();
+    }
 
     Path getBaseDir();
 }

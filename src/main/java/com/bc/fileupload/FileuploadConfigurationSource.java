@@ -2,7 +2,6 @@ package com.bc.fileupload;
 
 import com.bc.fileupload.functions.GetContentType;
 import com.bc.fileupload.functions.GetContentTypeImpl;
-import com.bc.fileupload.functions.GetUniquePathForFilename;
 import com.bc.fileupload.functions.GetUniquePathForFilenameImpl;
 import com.bc.fileupload.services.FileStorage;
 import com.bc.fileupload.services.FileStorageHandler;
@@ -14,6 +13,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.springframework.context.annotation.Bean;
+import com.bc.fileupload.functions.FilePathProvider;
 
 /**
  * @author chinomso ikwuagwu
@@ -32,7 +32,7 @@ public abstract class FileuploadConfigurationSource {
     
     @Bean public FileStorageHandler fileStorageHandler() {
         return new FileStorageHandlerImpl(
-                this.getUniquePathForFilename(),
+                this.filePathProvider(),
                 this.fileStorage(),
                 this.getDownloadContextPath()
         );
@@ -42,19 +42,15 @@ public abstract class FileuploadConfigurationSource {
         return DEFAULT_DOWNLOAD_CONTEXT_PATH;
     }
     
-    @Bean public GetUniquePathForFilename getUniquePathForFilename() {
+    @Bean public FilePathProvider filePathProvider() {
         final String prop = this.getDirectoryToSaveUploadedFiles();
-        final Path path;
+        final Path dirToSaveUploads;
         if(prop == null || prop.isEmpty()) {
-            path = Paths.get(System.getProperty("user.home"), ".bcfileupload");
+            dirToSaveUploads = Paths.get(System.getProperty("user.home"), ".bcfileupload");
         }else{
-            path = Paths.get(prop);
+            dirToSaveUploads = Paths.get(prop);
         }
-        final File file = path.toFile();
-        if(file.exists()) {
-            file.mkdirs();
-        }
-        return new GetUniquePathForFilenameImpl(path);
+        return new GetUniquePathForFilenameImpl(dirToSaveUploads);
     }
     
     @Bean public FileStorage fileStorage() {

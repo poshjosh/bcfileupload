@@ -1,7 +1,6 @@
 package com.bc.fileupload;
 
 import com.bc.fileupload.functions.GetContentType;
-import com.bc.fileupload.functions.GetUniquePathForFilename;
 import com.bc.fileupload.services.FileStorage;
 import com.bc.fileupload.services.FileStorageHandler;
 import com.bc.fileupload.services.SaveHandler;
@@ -9,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import com.bc.fileupload.functions.FilePathProvider;
 
 /**
  * @author chinomso ikwuagwu
@@ -38,8 +38,8 @@ public class FileuploadConfiguration {
         return delegate.fileStorageHandler();
     }
 
-    @Bean public GetUniquePathForFilename getUniquePathForFilename() {
-        return delegate.getUniquePathForFilename();
+    @Bean public FilePathProvider getUniquePathForFilename() {
+        return delegate.filePathProvider();
     }
 
     @Bean public FileStorage fileStorage() {

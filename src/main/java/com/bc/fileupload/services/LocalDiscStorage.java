@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalDiscStorage implements FileStorage<Path> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocalDiscStorage.class);
+    private final Logger log = LoggerFactory.getLogger(LocalDiscStorage.class);
     
     private final SaveHandler saveHandler;
 
@@ -46,7 +46,10 @@ public class LocalDiscStorage implements FileStorage<Path> {
     public Path store(Path path, InputStream in) {
         
         try {
+            
             this.saveHandler.save(in, path);
+            
+            log.debug("Saved to local disc: {}", path);
 
             return path;
             
@@ -67,12 +70,14 @@ public class LocalDiscStorage implements FileStorage<Path> {
         try{
             deleted = Files.deleteIfExists(path);
             if( ! deleted) {
-                LOG.info("Will delete on exit: {}", path);
+                log.info("Will delete on exit: {}", path);
                 path.toFile().deleteOnExit();
+            }else{
+                log.debug("Deleted from local disc: {}, path: {}", deleted, path);
             }
         }catch(IOException e) {
-            LOG.warn("Problem deleting: " + path, e);
-            LOG.info("Will delete on exit: {}", path);
+            log.warn("Problem deleting: " + path, e);
+            log.info("Will delete on exit: {}", path);
             path.toFile().deleteOnExit();
         }
         

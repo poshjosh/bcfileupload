@@ -3,7 +3,6 @@ package com.bc.fileupload.services;
 import com.bc.fileupload.UploadFileResponse;
 import com.bc.fileupload.exceptions.FileNotFoundExceptionForResponseCode404;
 import com.bc.fileupload.exceptions.FileUploadExceptionForInternalServerError;
-import com.bc.fileupload.functions.GetUniquePathForFilename;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -18,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import com.bc.fileupload.functions.FilePathProvider;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Mar 27, 2019 11:02:31 PM
@@ -26,13 +26,13 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(FileStorageHandlerImpl.class);
     
-    private final GetUniquePathForFilename getPathForFilename;
+    private final FilePathProvider getPathForFilename;
 
     private final FileStorage fileStorage;
     
     private final String downloadPathContext;
 
-    public FileStorageHandlerImpl(GetUniquePathForFilename getPathForFilename, 
+    public FileStorageHandlerImpl(FilePathProvider getPathForFilename, 
             FileStorage fileStorage, String downloadPathContext) {
         this.getPathForFilename = Objects.requireNonNull(getPathForFilename);
         this.fileStorage = Objects.requireNonNull(fileStorage);
@@ -80,7 +80,7 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
 
         LOG.debug("Uploading file: {} = {}", file.getName(), file.getOriginalFilename());
         
-        final Path path = getPathForFilename.apply(file.getOriginalFilename());
+        final Path path = getPathForFilename.getUniquePath(file.getOriginalFilename());
         
         try{
             
@@ -88,15 +88,16 @@ public class FileStorageHandlerImpl implements FileStorageHandler{
 
             final Path relativePath = getPathForFilename.getBaseDir().relativize(targetLocation);
             
+            final String pathStr = relativePath.toString().replace('\\', '/');
+            
             final String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(downloadPathContext + "/")
-                    .path(relativePath.toString().replace('\\', '/'))
+                    .path(pathStr)
                     .toUriString();
 
-            LOG.debug("Uploaded file: {} to {}", file.getName(), relativePath);
+            LOG.debug("Uploaded file: {} to {}", file.getName(), pathStr);
     
-            return getUploadFileSuccessResponse(
-                    file, relativePath.toString(), fileDownloadUri);
+            return getUploadFileSuccessResponse(file, pathStr, fileDownloadUri);
             
         }catch(IOException ex) {
         

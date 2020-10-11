@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 /**
  * @author Chinomso Bassey Ikwuagwu on Apr 9, 2019 9:20:46 AM
  */
-public class GetUniquePathForFilenameImpl implements GetUniquePathForFilename {
+public class GetUniquePathForFilenameImpl implements FilePathProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUniquePathForFilenameImpl.class);
     
@@ -39,17 +39,16 @@ public class GetUniquePathForFilenameImpl implements GetUniquePathForFilename {
     public GetUniquePathForFilenameImpl(Path baseDir) {
         this.baseDir = baseDir.toAbsolutePath().normalize();
         LOG.debug("File storage dir: {}", baseDir);
-
         this.createDirsIfNotExisting(this.baseDir);
     }
     
     @Override
-    public GetUniquePathForFilename newInstance(Path baseDir) {
+    public FilePathProvider newInstance(Path baseDir) {
         return new GetUniquePathForFilenameImpl(baseDir);
     }
 
     @Override
-    public Path apply(String arg) {
+    public Path getUniquePath(String arg) {
         
         final String filename = cleanAndValidate(arg);
         
