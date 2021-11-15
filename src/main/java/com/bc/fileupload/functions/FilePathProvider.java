@@ -28,8 +28,12 @@ public interface FilePathProvider{
     
     FilePathProvider newInstance(Path baseDir);
     
-    default Path getPath(String a) {
-        return Paths.get(this.getBaseDir().toString(), a).toAbsolutePath().normalize();
+    default Path getPath(String s) {
+        return Paths.get(this.getBaseDir().toString(), s).toAbsolutePath().normalize();
+    }
+    
+    default Path relativize(Path path) {
+        return getBaseDir().relativize(path);
     }
 
     Path getBaseDir();
